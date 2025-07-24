@@ -1,0 +1,10 @@
+
+Camera Sensor	  Resolution      Interface	  Works with OPi 3B v2.1
+
+1) OV5647	   5MPs             MIPI CSI-2	  Yes
+2) IMX219	   8MPs             MIPI CSI-2	  Yes
+3) OV8865	   8MPs             MIPI CSI-2          Yes
+       
+Note : OV5647 OR IMX219 this camera sensor will be recommended support on orange pi OPi 3B v2.1
+
+
