@@ -1,0 +1,104 @@
+
+
+Run this to install Yocto dependencies:
+
+sudo apt update
+
+sudo apt install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+  build-essential chrpath socat cpio python3 python3-pip python3-pexpect \
+  xz-utils debianutils iputils-ping libsdl1.2-dev xterm
+
+2. Create a Working Directory
+
+mkdir -p ~/yocto_opi3
+cd ~/yocto_opi3
+
+3. Clone Required Layers Manually
+Poky (Yocto Core):
+
+git clone -b dunfell git://git.yoctoproject.org/poky
+
+ meta-openembedded (extra recipes):
+
+git clone -b dunfell git://git.openembedded.org/meta-openembedded
+
+cd poky
+
+for meta layer rk 3566 board
+
+git clone https://github.com/JeffyCN/meta-rockchip.git -b dunfell
+
+
+check /meta-rockchip/conf/machine/rpckchip-rk3566.conf
+
+>> local.conf
+
+# This sets the default machine to be qemux86-64 if no other machine is selected:
+
+MACHINE ??= "qemux86-64"
+MACHINE = "rockchip-rk3566-evb"
+
+>> bblayer.conf
+
+  ${TOPDIR}/../meta \
+  ${TOPDIR}/../meta-poky \
+  ${TOPDIR}/../meta-yocto-bsp \
+  ${TOPDIR}/../meta-openembedded/meta-oe \
+  ${TOPDIR}/../meta-openembedded/meta-python \
+  ${TOPDIR}/../meta-openembedded/meta-networking \
+  ${TOPDIR}/../meta-openembedded/meta-multimedia \
+  ${TOPDIR}/../meta-arm/meta-arm-toolchain \
+  ${TOPDIR}/../meta-arm/meta-arm \
+  ${TOPDIR}/../meta-rockchip \
+  "
+
+added own layer
+
+bitbake-layers create-layer meta-pigeon
+
+//////////////////////////////
+
+Issue happen build time for bitbake you should try
+
+ERROR: Unable to connect to bitbake server, or start one (server startup failures would be in bitbake-cookerdaemon.log).
+
+yocto@yocto-MS-7D48:~/workspace/yocto_opi3/poky/build$ pkill -f bitbake
+yocto@yocto-MS-7D48:~/workspace/yocto_opi3/poky/build$ ps aux | grep bitbake
+yocto      21468  0.5  0.1 114560 29032 pts/1    Tl   15:58   0:05 python3 /home/yocto/workspace/yocto_opi3/poky/bitbake/bin/bitbake core-image-pigeon
+yocto      21480  2.2  1.8 311912 298684 ?       S    15:58   0:22 python3 /home/yocto/workspace/yocto_opi3/poky/bitbake/bin/bitbake core-image-pigeon
+yocto     435687  0.0  0.1 113112 28144 pts/1    Tl   16:12   0:00 python3 /home/yocto/workspace/yocto_opi3/poky/bitbake/bin/bitbake core-image-pigeon
+yocto     436156  0.0  0.0   8912   720 pts/1    S+   16:15   0:00 grep --color=auto bitbake
+yocto@yocto-MS-7D48:~/workspace/yocto_opi3/poky/build$ rm -rf bitbake-cookerdaemon.log bitbake.lock.*
+yocto@yocto-MS-7D48:~/workspace/yocto_opi3/poky/build$ rm -f /tmp/bitbake.sock
+yocto@yocto-MS-7D48:~/workspace/yocto_opi3/poky/build$ rm -rf tmp/cache
+
+used above command to set bitbake
+//
+show layer 
+bitbake-layers show-layer
+bitbake-layers show-recipies
+bitbake-layers show-recipes python3
+/////////////////////
+
+//Camera device for kernel 6.1 version/
+
+GC2145 Camera Support on Kernel 6.1 (RK3566)
+
+//////////////////////
+bitbake -c menuconfig virtual/kernel
+
+Kernel Configuration Required
+
+To use any of these, your kernel must enable:
+
+CONFIG_VIDEO_OV5647=y
+CONFIG_VIDEO_GC2145=y
+CONFIG_VIDEO_IMX219=y
+CONFIG_VIDEO_RK_ISP1=y
+CONFIG_VIDEO_RK_CSI2=y
+
+///////////
+
+
+
+
